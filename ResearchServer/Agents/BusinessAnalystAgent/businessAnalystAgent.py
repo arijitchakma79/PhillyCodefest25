@@ -1,9 +1,3 @@
-"""
-LLM-Powered Business Idea Analysis Agent (Fully Synchronous Version)
-
-This file should replace your current businessAnalystAgent.py file to remove all async/await functionality.
-"""
-
 import os
 import json
 import logging
@@ -14,10 +8,6 @@ from dotenv import load_dotenv
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-# Load environment variables
-dotenv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
-load_dotenv(dotenv_path)
 
 class BusinessIdeaAnalyzer:
     def __init__(self, openai_api_key: Optional[str] = None):
@@ -83,7 +73,7 @@ class BusinessIdeaAnalyzer:
         
         # Call the OpenAI API
         response = self.client.chat.completions.create(
-            model="gpt-4-turbo", 
+            model="gpt-4o-mini", 
             messages=[
                 {
                     "role": "system",
