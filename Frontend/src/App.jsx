@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import './App.css'
 import TabBox from './TabBox.jsx'
-import ThinkingTreeChart from './ThinkingTreeChart'
 
 import { Box, Button, Input, VStack, HStack, Tabs, Textarea } from "@chakra-ui/react"
 import { motion } from "framer-motion";

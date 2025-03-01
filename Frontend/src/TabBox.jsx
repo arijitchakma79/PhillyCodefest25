@@ -1,3 +1,6 @@
+import { Tabs } from "@chakra-ui/react"
+import ThinkingTreeChart from './ThinkingTreeChart'
+
 export default function TabBox() {
     return (
       <Tabs.Root defaultValue="thinking">
