@@ -7,7 +7,6 @@ class KnowledgeAgent(LLMAgent):
 
         super().__init__(instructions, False, OutputFormat.JSON, knowledge)
 
-
 class Knowledge:
     def __init__(self):
         pass
