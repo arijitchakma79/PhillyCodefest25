@@ -1,9 +1,9 @@
-from src.test_agent import TestAgent
+from src.agents.interface_ai import InterfaceAI
 import os
-from src.llm_agent import OutputFormat
+from src.utils.llm_agent import OutputFormat
 import json
 
-agent = TestAgent()
+agent = ()
 
 def run_cli(agent):
     """Run a command-line interface for interacting with the agent."""
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     
     # Create the travel assistant
-    travel_agent = TestAgent()
+    travel_agent = InterfaceAI()
     
     # Run the CLI
     run_cli(travel_agent)
