@@ -146,7 +146,7 @@ class GoogleTrendsAnalyzer:
         
         try:
             response = self.openai_client.chat.completions.create(
-                model="gpt-4o-mini",
+                model="gpt-4o",
                 messages=[
                     {"role": "system", "content": "You are an expert in market trends analysis and business strategy."},
                     {"role": "user", "content": prompt}
