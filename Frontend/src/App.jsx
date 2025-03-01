@@ -1,8 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
+import ThinkingTreeChart from './ThinkingTreeChart'
 
-function App() {
+export default function App() {
   const [count, setCount] = useState(0)
+  	
+  //useEffect(() => {alert("Wake up!")}, [count]);
 
   return (
     <>
@@ -15,8 +18,7 @@ function App() {
           Generate {count}
         </button>
       </div>
+	  <ThinkingTreeChart/>
     </>
   )
 }
-
-export default App
