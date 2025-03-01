@@ -22,3 +22,6 @@ class Knowledge:
     def get_info(self, topic):
         self.__update_agent_knowledge()
         return self.__knowledge_agent.process_text(topic)
+    
+    def clear(self):
+        self.__knowledge = []

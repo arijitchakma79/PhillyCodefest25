@@ -21,6 +21,63 @@ class LLMAgent:
         self.__chat_history = []
         self.__examples = []
 
+    def load_config(self, file_path=None):
+        """
+        Load configuration from a YAML file.
+        
+        Args:
+            file_path (str, optional): Path to the YAML config file.
+                                    If None, will look for 'agents/config.yaml' or 'agents/config.yml'
+                                    relative to main.py.
+        
+        Returns:
+            bool: True if loading was successful, False otherwise.
+        """
+        import yaml  # Import yaml module
+
+        
+        if file_path is None:
+            return False
+        
+   
+        try:
+            with open(file_path, 'r') as f:
+                config = yaml.safe_load(f)
+            
+            if not config:
+                return False
+                
+            # Update configuration if properties exist in the loaded config
+            if "instructions" in config:
+                self.__instructions = config["instructions"]
+                
+            if "knowledge" in config:
+                self.__knowledge = config["knowledge"]
+                
+            if "store_history" in config and isinstance(config["store_history"], bool):
+                self.__store_history = config["store_history"]
+                
+            if "output_format" in config:
+                if config["output_format"] == "JSON":
+                    self.set_output_format(OutputFormat.JSON)
+                elif config["output_format"] == "TEXT":
+                    self.set_output_format(OutputFormat.TEXT)
+                    
+            return True
+        
+        except FileNotFoundError:
+
+            print("Couldn't find config file!")
+            # Config file not found, but that's okay - we'll use defaults
+            return False
+        except yaml.YAMLError as e:
+            print(f"Warning: Invalid YAML in config file {file_path}: {str(e)}")
+            return False
+        except Exception as e:
+            print(f"Error loading config: {str(e)}")
+            return False
+
+
     def process_text(self, text_input):
         # Construct the system message with instructions
         system_content = self.__instructions
@@ -91,6 +148,9 @@ class LLMAgent:
     def set_knowledge(self, knowledge):
         """Set or update the knowledge base text"""
         self.__knowledge = knowledge
+
+    def clear_knowledge(self):
+        self.__knowledge = ""
     
     def toggle_history(self, store_history):
         """Enable or disable chat history storage"""
