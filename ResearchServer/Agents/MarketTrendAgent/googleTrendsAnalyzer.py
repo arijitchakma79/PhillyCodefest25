@@ -1,9 +1,8 @@
 import os
 import json
 import requests
-from dotenv import load_dotenv
+from app.config import Config
 
-load_dotenv()
 
 class GoogleTrendsAnalyzer:
     def __init__(self, serpapi_key=None):
