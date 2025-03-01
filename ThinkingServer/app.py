@@ -6,12 +6,14 @@ from src.chatbot.chatbot import Chatbot
 from src.agents.preprocesser_agent import PreprocesserAgent
 from src.utils.state_manager import State
 from src.utils.llm_agent import OutputFormat
+from src.knowledge.knowledge import Knowledge
 
 app = Flask(__name__)
 
 # Initialize the chatbot and preprocesser
 chatbot = Chatbot()
 preprocesser = PreprocesserAgent()
+knowledge = Knowledge()
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
@@ -48,7 +50,6 @@ def get_state():
 @app.route('/api/process', methods=['GET'])
 def process():
     result = json.loads(preprocesser.process_text(chatbot.interface_agent.get_history_text()))
-    print(result)
 
     response = requests.post(
         url="http://127.0.0.1:5000/analyze",
@@ -60,7 +61,11 @@ def process():
     
     # Get the JSON response from the other server
     result = response.json()
-    print(result)
+    
+    knowledge.add_knowledge(result)
+
+    print(knowledge.get_all_info())
+    print(knowledge.get_info("name of the business"))
 
 
     return jsonify(result)
