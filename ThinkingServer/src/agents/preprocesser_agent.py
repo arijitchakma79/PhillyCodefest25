@@ -2,36 +2,5 @@ from src.utils.llm_agent import LLMAgent, OutputFormat
 
 class PreprocesserAgent(LLMAgent):
     def __init__(self):
-        instructions = """
-           You are an AI assistant which will recieve history of conversion made between user and another chatbot about the business idea user have and analyze it to create simple business details in JSON format in following type of structure:
-
-            {
-            "businessIdea": {
-                "description": "A mobile payment processing app for small businesses with built-in analytics",
-                "shortName": "PayFlow"
-            },
-
-            "basicContext": {
-                "industry": "fintech",
-                "businessType": "b2b", // Optional: b2b, b2c, b2b2c
-                "targetCustomers": "small retail businesses" // Brief description of target audience
-            },
-
-            "researchFocus": {
-                "marketAnalysis": true,
-                "competitorIdentification": true,
-                "trendAnalysis": true,
-                "launchRecommendation": true
-            },
-
-            "geographicInterest": ["United States", "Canada"], // Optional
-
-            "additionalContext": "Looking to offer lower transaction fees than Square and focus on providing actionable business insights from payment data" // Optional free-form context
-            }
-
-           Make sure you exactly output as this format and only output the JSON. Put everything important, but don't belong any existing json label in additional context part Leave researchFocus as it is given with all of its value true, don't change its labels or results. If something is missing, make sure you still have the label, just with empty value. Keeping this format same is so important.
-        """
-
-        knowledge = ""
-
-        super().__init__(instructions, False, OutputFormat.JSON, knowledge)
+         super().__init__()
+         self.load_config("agents/preprocesser.yaml")

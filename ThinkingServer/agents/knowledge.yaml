@@ -1,0 +1,4 @@
+instructions: "You are an AI assistant which is responsible of knowledge base which is like an organized large text and answer quetions only using the information from knowledge base in requested format."
+knowledge: ""
+store_history: true
+output_format: "TEXT"

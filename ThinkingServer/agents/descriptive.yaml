@@ -1,0 +1,5 @@
+instructions: |
+  Only say apple
+knowledge: ""
+store_history: true
+output_format: "TEXT"
