@@ -6,8 +6,7 @@ venv/
 __pycache__/
 *.pyc
 *.pyo
-*.pyd
 
-# Ignore environment files
 .env
-
+node_modules/
+main
