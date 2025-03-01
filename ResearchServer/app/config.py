@@ -13,5 +13,5 @@ class Config:
     DEBUG = True
 
 
-print(Config.OPENAI_API_KEY)
+
 
