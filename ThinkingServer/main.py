@@ -1,8 +1,12 @@
 import os
 import json
 from src.utils.llm_agent import OutputFormat
+
 from src.chatbot.chatbot import Chatbot
+from src.agents.preprocesser_agent import PreprocesserAgent
 from src.utils.state_manager import State
+
+preprocesserAgent = PreprocesserAgent()
 
 def run_cli(chatbot):
     """Run a command-line interface for interacting with the chatbot."""
@@ -37,6 +41,11 @@ def run_cli(chatbot):
             chatbot.descriptive_agent.set_output_format(OutputFormat.TEXT)
             chatbot.interface_agent.set_output_format(OutputFormat.TEXT)
             print("Output format changed to TEXT")
+            continue
+
+        elif user_input.lower() == 'process':
+            result = preprocesserAgent.process_text(chatbot.interface_agent.get_history_text())
+            print(result)
             continue
         
         elif user_input.lower().startswith('state '):

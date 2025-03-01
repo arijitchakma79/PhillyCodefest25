@@ -103,3 +103,12 @@ class LLMAgent:
     def get_history(self):
         """Get the current chat history"""
         return self.__chat_history
+    
+    def get_history_text(self):
+        history_text = "Chat History:\n"
+        for entry in self.__chat_history:
+            if entry["role"] == "user":
+                history_text += f"User: {entry['content']}\n"
+            else:
+                history_text += f"Assistant: {entry['content']}\n"
+        return history_text
