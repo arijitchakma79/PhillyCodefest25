@@ -5,10 +5,6 @@ import ThinkingTreeChart from './ThinkingTreeChart'
 import { Box, Button, Input, VStack, HStack, Tabs, Textarea } from "@chakra-ui/react"
 import { motion } from "framer-motion";
 
-// const ChatBox = () => {
-// 	return <Textarea placeholder="Comment..." />
-// }
-
 const ChatBox = () => {
 	const [messages, setMessages] = useState([]);
 	const [input, setInput] = useState("");
@@ -55,29 +51,39 @@ const ChatBox = () => {
 			h="300px"
 		  >
 			{messages.map((msg, index) => (
-			  <Box
+			  <motion.div
 				key={index}
-				alignSelf={msg.sender === "user" ? "flex-end" : "flex-start"}
-				bg={msg.sender === "user" ? "#c3e6ff" : "#f1f1f1"}
-				p={2}
-				borderRadius="8px"
-				maxW="75%"
-				mb={2}
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				transition={{ duration: 0.5 }}
+				style={{
+				  alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
+				  background: msg.sender === "user" ? "#c3e6ff" : "#f1f1f1",
+				  padding: "8px",
+				  borderRadius: "8px",
+				  maxWidth: "75%",
+				  marginBottom: "8px"
+				}}
 			  >
 				{msg.text}
-			  </Box>
+			  </motion.div>
 			))}
 			{typingMessage && (
-			  <Box
-				alignSelf="flex-start"
-				bg="#f1f1f1"
-				p={2}
-				borderRadius="8px"
-				maxW="75%"
-				mb={2}
+			  <motion.div
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				transition={{ duration: 0.5 }}
+				style={{
+				  alignSelf: "flex-start",
+				  background: "#f1f1f1",
+				  padding: "8px",
+				  borderRadius: "8px",
+				  maxWidth: "75%",
+				  marginBottom: "8px"
+				}}
 			  >
 				{typingMessage}
-			  </Box>
+			  </motion.div>
 			)}
 			<div ref={messagesEndRef} />
 		  </Box>
