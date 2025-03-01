@@ -1,0 +1,197 @@
+{
+  "requestId": "test-req-002",
+  "timestamp": "2025-03-01T15:45:00Z",
+  "businessIdea": {
+    "description": "An app that connects local farmers with consumers for fresh produce delivery",
+    "shortName": "FarmFresh"
+  },
+  "basicContext": {
+    "businessType": "b2c",
+    "targetCustomers": "health-conscious urban consumers"
+  },
+  "geographicInterest": [
+    "United States"
+  ],
+  "additionalContext": "Focus on sustainability and supporting local agriculture",
+  "enhancedContext": {
+    "industryAnalysis": {
+      "primaryIndustry": "Agricultural Technology",
+      "subIndustries": [
+        "Food Delivery Services",
+        "Sustainable Agriculture"
+      ],
+      "keywords": [
+        "local farming",
+        "fresh produce",
+        "sustainability",
+        "farm-to-table",
+        "agritech"
+      ],
+      "relatedIndustries": [
+        "Mobile Application Development",
+        "E-commerce Platforms"
+      ]
+    },
+    "businessModelAnalysis": {
+      "primaryModel": "Marketplace",
+      "revenueStreams": [
+        "Transaction fees",
+        "Subscription fees",
+        "Advertising fees",
+        "Premium listings for farmers"
+      ],
+      "b2bVsB2c": "B2C",
+      "customerAcquisitionChannels": [
+        "Social media marketing",
+        "SEO",
+        "Local events",
+        "Partnerships with eco-friendly organizations"
+      ],
+      "valueProposition": [
+        "Fresh, local produce delivered directly from farm to consumer",
+        "Supporting local farmers and sustainable agriculture",
+        "Enhanced freshness and quality of food"
+      ],
+      "scalabilityAssessment": "High potential for scalability with regional expansion and technology integration"
+    },
+    "competitiveParameters": {
+      "likelyCompetitors": [
+        {
+          "name": "Farmigo",
+          "type": "direct",
+          "strengths": [
+            "Established brand",
+            "Existing farmer network"
+          ],
+          "weaknesses": [
+            "Limited delivery areas"
+          ]
+        },
+        {
+          "name": "Instacart",
+          "type": "indirect",
+          "strengths": [
+            "Wide customer base",
+            "Robust delivery system"
+          ],
+          "weaknesses": [
+            "Less focus on local produce"
+          ]
+        }
+      ],
+      "competitiveDimensions": [
+        "Quality of produce",
+        "Delivery speed",
+        "Price",
+        "Sustainability practices"
+      ],
+      "marketSaturation": "medium",
+      "barrierToEntry": "medium"
+    },
+    "marketParameters": {
+      "targetSegments": [
+        "Health-conscious consumers",
+        "Supporters of local businesses",
+        "Eco-friendly lifestyle adopters"
+      ],
+      "geographicScope": [
+        "Urban areas within the United States"
+      ],
+      "businessSize": "Medium to Large",
+      "industryFocus": [
+        "Agriculture",
+        "Technology",
+        "Food & Beverage"
+      ],
+      "customerNeeds": [
+        "Access to fresh and healthy food",
+        "Convenience in purchasing and delivery",
+        "Support for sustainable and ethical consumption"
+      ],
+      "marketSize": {
+        "estimate": 500000000,
+        "unit": "USD",
+        "growthRate": 5.5
+      },
+      "adoptionChallenges": [
+        "Building trust with consumers",
+        "Logistical challenges in coordinating with multiple small farmers",
+        "Maintaining product quality during delivery"
+      ]
+    },
+    "technicalRequirements": {
+      "platforms": [
+        "iOS",
+        "Android",
+        "Web"
+      ],
+      "integrationNeeds": [
+        "GPS tracking for deliveries",
+        "Payment gateway integration",
+        "Real-time inventory management"
+      ],
+      "techStack": [
+        "React Native for mobile apps",
+        "Node.js for backend",
+        "MongoDB for database"
+      ],
+      "developmentComplexity": "medium",
+      "timeToMarket": "6 to 12 months"
+    },
+    "regulatoryConsiderations": {
+      "regulations": [
+        "Food safety and handling regulations",
+        "Agricultural produce trade regulations"
+      ],
+      "certifications": [
+        "Organic certification for participating farms",
+        "Fair Trade certification"
+      ],
+      "dataPrivacyRequirements": [
+        "GDPR compliance for user data protection"
+      ],
+      "complianceComplexity": "medium"
+    },
+    "swotAnalysis": {
+      "strengths": [
+        "Promotes local economies",
+        "Freshness and quality of products",
+        "Alignment with sustainability trends"
+      ],
+      "weaknesses": [
+        "Dependency on local farm outputs",
+        "Seasonal fluctuations in product availability"
+      ],
+      "opportunities": [
+        "Expanding to new markets",
+        "Partnerships with environmental organizations",
+        "Developing private label products"
+      ],
+      "threats": [
+        "Climate change affecting farm outputs",
+        "Large competitors with better logistics"
+      ]
+    }
+  },
+  "agentRouting": [
+    {
+      "agentType": "Market Research Analyst",
+      "priority": "high",
+      "specificFocus": [
+        "Consumer behavior analysis",
+        "Competitor benchmarking"
+      ]
+    }
+  ],
+  "confidenceScores": {
+    "industryClassification": 0.9,
+    "competitorIdentification": 0.85,
+    "marketSizing": 0.75,
+    "regulatoryAssessment": 0.8,
+    "overallConfidence": 0.82
+  },
+  "dataGaps": [
+    "Detailed financial projections",
+    "Specific consumer demographic data"
+  ]
+}
