@@ -128,7 +128,7 @@ def process():
     output = output_agent.process_text(knowledge.get_all_info_text())
 
     print(output)
-    return jsonify(output)
+    return jsonify(json.loads(output))
 
 @app.route('/api/knowledge', methods=['GET'])
 def get_knowledge():
