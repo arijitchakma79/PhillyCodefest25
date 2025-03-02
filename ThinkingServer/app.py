@@ -115,7 +115,13 @@ def process():
     result = response.json()
     
     knowledge.add_knowledge(result)
+<<<<<<< HEAD
     chatbot.descriptive_agent.set_knowledge(knowledge.get_all_info())
+=======
+    
+    print(knowledge.get_all_info())
+    print(knowledge.get_info("name of the business"))
+>>>>>>> 64638e998b8cd1fd95e93de9f15303367cefcae8
     
     return jsonify(result)
 
