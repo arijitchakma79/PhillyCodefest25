@@ -7,7 +7,7 @@ from typing import Dict, Any, List
 from Agents.BusinessAnalystAgent.businessAnalystAgent import BusinessIdeaAnalyzer
 from Agents.MarketTrendAgent.googleTrendsAnalyzer import GoogleTrendsAnalyzer
 from Agents.CompetitorAgent.competitorAgent import CompetitorAgentResearch
-from Agents.SwotAnalysisAgent.swotAnalysisAgent import SWOTAnalysisAgent 
+from Agents.SwotAnalysisAgent.swotAnalysisAgent import SWOTAnalysisAgent
 from app.config import Config
 
 # Setup logging
@@ -20,9 +20,12 @@ class BusinessAnalysisPipeline:
         self.openai_key = Config.OPENAI_API_KEY
         self.serp_key = Config.SERP_API_KEY
         self.perplexity_key = Config.PERPLEXITY_API_KEY
+        
+        # Initialize the agents
         self.business_analyzer = BusinessIdeaAnalyzer(openai_api_key=self.openai_key)
         self.trends_analyzer = GoogleTrendsAnalyzer(serpapi_key=self.serp_key, openai_key=self.openai_key)
         
+        # CompetitorAgentResearch and SWOTAnalysisAgent are initialized with business data, so we create them later
         
     def _run_business_analysis(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
         """Run the business analysis using BusinessIdeaAnalyzer"""
@@ -52,14 +55,15 @@ class BusinessAnalysisPipeline:
             logger.error(f"Error in competitor analysis: {str(e)}")
             return {"status": "error", "message": str(e), "competitors": {}}
     
-    def _run_swot_analysis(self, business_analysis: Dict[str, Any], competitor_analysis: Dict[str, Any]) -> Dict[str, Any]:
-        """Run the SWOT analysis using SWOTAnalysisAgent"""
+    def _run_swot_analysis(self, business_analysis: Dict[str, Any], competitor_analysis: Dict[str, Any], trends_analysis: Dict[str, Any]) -> Dict[str, Any]:
+        """Run the SWOT analysis using SWOTAnalysisAgent with trends data"""
         logger.info(f"Starting SWOT analysis for: {business_analysis.get('originalRequest', {}).get('businessIdea', {}).get('shortName', 'Unnamed')}")
         try:
             swot_agent = SWOTAnalysisAgent(
                 api_key=self.openai_key,
                 business_data=business_analysis,
-                competitor_data=competitor_analysis
+                competitor_data=competitor_analysis,
+                trends_data=trends_analysis
             )
             return swot_agent.generate_swot_analysis()
         except Exception as e:
@@ -100,8 +104,8 @@ class BusinessAnalysisPipeline:
             results["trendsAnalysis"] = trends_analysis
             results["competitorAnalysis"] = competitor_analysis
         
-        # Step 3: Run SWOT analysis using competitor analysis results
-        swot_analysis = self._run_swot_analysis(business_analysis, competitor_analysis)
+        # Step 3: Run SWOT analysis using competitor and trends analysis results
+        swot_analysis = self._run_swot_analysis(business_analysis, competitor_analysis, trends_analysis)
         results["swotAnalysis"] = swot_analysis
         
         # Calculate execution time
@@ -111,12 +115,13 @@ class BusinessAnalysisPipeline:
         # Add metadata to the results
         results["metadata"] = {
             "executionTime": f"{execution_time:.2f} seconds",
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "businessName": business_analysis.get("originalRequest", {}).get("businessIdea", {}).get("shortName", "Unnamed")
         }
         
         return results
 
-
+# Modified service functions to use the pipeline
 def analyze_business_pipeline(request_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Full business analysis pipeline that distributes data to all agents
@@ -131,14 +136,27 @@ def analyze_business_pipeline(request_data: Dict[str, Any]) -> Dict[str, Any]:
     pipeline = BusinessAnalysisPipeline()
     return pipeline.run_pipeline(request_data)
 
-
-def analyze_swot(business_data: Dict[str, Any], competitor_data: Dict[str, Any]) -> Dict[str, Any]:
-    """Analyze business and competitor data to generate a SWOT analysis"""
+# Add standalone SWOT analysis function for individual use
+def analyze_swot(business_data: Dict[str, Any], competitor_data: Dict[str, Any], trends_data: Dict[str, Any] = None) -> Dict[str, Any]:
+    """
+    Analyze business, competitor, and trends data to generate a SWOT analysis
+    
+    Args:
+        business_data (Dict[str, Any]): Business analysis data
+        competitor_data (Dict[str, Any]): Competitor analysis data
+        trends_data (Dict[str, Any], optional): Market trends analysis data
+        
+    Returns:
+        Dict[str, Any]: SWOT analysis results with strengths, weaknesses, opportunities, and threats
+    """
+    from app.config import Config
+    
     try:
         swot_agent = SWOTAnalysisAgent(
             api_key=Config.OPENAI_API_KEY,
             business_data=business_data,
-            competitor_data=competitor_data
+            competitor_data=competitor_data,
+            trends_data=trends_data
         )
         
         return swot_agent.generate_swot_analysis()
@@ -146,7 +164,7 @@ def analyze_swot(business_data: Dict[str, Any], competitor_data: Dict[str, Any])
         logger.error(f"Error in SWOT analysis: {str(e)}")
         return {"status": "error", "message": str(e), "swot_analysis": {}}
 
-
+# Backwards compatibility functions for existing routes
 def analyze_idea(request_data: Dict[str, Any]) -> Dict[str, Any]:
     """Legacy function for business idea analysis only"""
     analyzer = BusinessIdeaAnalyzer(openai_api_key=Config.OPENAI_API_KEY)
