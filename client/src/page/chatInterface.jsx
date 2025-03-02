@@ -1,91 +1,111 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/chatInterface.css';
-// Import the Sidebar from the correct path - adjust as needed for your file structure
-import Sidebar from '../components/sidebar';
+import Sidebar from '../components/sidebar/sidebar';
+import { sendMessageToAPI, fetchGeneratedContent } from '../api/chatAPI';
+import { useTypewriterEffect } from '../utils/typewriter';
 
 const ChatInterface = () => {
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hello! How can I help you today?", sender: "assistant" },
-    { id: 2, text: "This is an example of a longer message that will wrap to the next line because it exceeds the maximum width we've set for messages.", sender: "assistant" }
-  ]);
+  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
+  // Fixed to match the sidebar component's expected keys
   const [sidebarContents, setSidebarContents] = useState({
-    code: "",
-    data: "",
-    analysis: "",
-    results: ""
+    marketTrends: "",
+    competitorResearch: "",
+    swotAnalysis: "",
+    simulate: "" // Changed from 'simulation' to 'simulate' to match the sidebar component
   });
-  const [activeNavItem, setActiveNavItem] = useState(0);
+  const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  
+  // Initialize typewriter effect hook
+  const { 
+    addMessageWithTypewriter, 
+    skipTypewriter,
+    hasActiveTypewriter
+  } = useTypewriterEffect(messages, setMessages, {
+    typingSpeed: 25, // Milliseconds between characters
+    initialDelay: 400, // Delay before typing starts
+    randomizeSpeed: true // Add some randomness to typing speed
+  });
 
-  const handleSubmit = (e) => {
+  // Handles user message submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (inputValue.trim() === "") return;
-    
-    const newMessage = { id: messages.length + 1, text: inputValue, sender: "user" };
-    setMessages([...messages, newMessage]);
+    if (!inputValue.trim()) return;
+
+    // Skip any active typewriter animation when user sends a new message
+    if (hasActiveTypewriter()) {
+      skipTypewriter();
+    }
+
+    const userMessage = { id: messages.length + 1, text: inputValue, sender: "user" };
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
-    
-    setTimeout(() => {
-      const assistantResponses = [
-        "I'm here to help! What would you like to know?",
-        "That's an interesting question. Let me think about it.",
-        "I understand what you're asking. Here's what I know.",
-        "Thank you for sharing that with me.",
-        "Could you provide more details about your question?"
-      ];
+
+    try {
+      const apiResponse = await sendMessageToAPI(inputValue);
       
-      const randomResponse = assistantResponses[Math.floor(Math.random() * assistantResponses.length)];
-      setMessages(prev => [...prev, { id: prev.length + 1, text: randomResponse, sender: "assistant" }]);
-    }, 1000);
-  };
-
-  const handleGenerate = () => {
-    // Example content for each tab
-    const codeExamples = [
-      `function greet() {\n  console.log("Hello, world!");\n}\n\ngreet();`,
-      `def fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\nprint(fibonacci(10))`,
-      `import React from 'react';\n\nconst App = () => {\n  return <h1>Hello React!</h1>;\n};\n\nexport default App;`,
-      `SELECT name, age \nFROM users \nWHERE age > 21 \nORDER BY name ASC;`
-    ];
-    
-    const randomCode = codeExamples[Math.floor(Math.random() * codeExamples.length)];
-    
-    // Update content for all tabs (as an example)
-    setSidebarContents({
-      code: randomCode,
-      data: "Sample data will appear here",
-      analysis: "Analysis information will appear here",
-      results: "Results will be displayed here"
-    });
-    
-    setShowSidebar(true);
-  };
-
-  const toggleSidebar = () => {
-    if (!showSidebar) {
-      // If sidebar is not showing, generate content first
-      handleGenerate();
-    } else {
-      // If sidebar is showing, just toggle it off
-      setShowSidebar(false);
+      // Use typewriter effect for assistant's response
+      addMessageWithTypewriter({ 
+        id: messages.length + 2, 
+        text: apiResponse.response, 
+        sender: "assistant" 
+      });
+      
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+      
+      // Even error messages get the typewriter treatment
+      addMessageWithTypewriter({ 
+        id: messages.length + 2, 
+        text: "Sorry, I encountered an error while processing your request.", 
+        sender: "assistant" 
+      });
     }
   };
 
-  // Get the content for the active tab
-  const getActiveContent = () => {
-    switch (activeNavItem) {
-      case 0:
-        return sidebarContents.code;
-      case 1:
-        return sidebarContents.data;
-      case 2:
-        return sidebarContents.analysis;
-      case 3:
-        return sidebarContents.results;
-      default:
-        return sidebarContents.code;
+  // Handles content generation and sidebar toggle
+  const handleGenerate = async () => {
+    // Skip any active typewriter animation
+    if (hasActiveTypewriter()) {
+      skipTypewriter();
+    }
+    
+    setLoading(true);
+    try {
+      // Example of what the API might return
+      const generatedData = await fetchGeneratedContent();
+      
+      // Update the sidebar content with the generated data
+      // Map the API response keys to the sidebar expected keys
+      setSidebarContents({
+        marketTrends: generatedData.marketTrends || "Market trends analysis shows increasing demand for sustainable products with 28% YoY growth.",
+        competitorResearch: generatedData.competitorResearch || "Main competitors include GreenTech (market share: 34%), EcoSolutions (22%), and SustainCorp (18%).",
+        swotAnalysis: generatedData.swotAnalysis || "Strengths: Strong R&D team\nWeaknesses: Limited market presence\nOpportunities: Emerging markets\nThreats: Increasing regulations",
+        simulate: generatedData.simulation || "Sales forecast model predicts 18-22% growth with current strategy." // Map 'simulation' from API to 'simulate' for sidebar
+      });
+      
+      // Show the sidebar after content is generated
+      setShowSidebar(true);
+      
+      // Add a message indicating content was generated (with typewriter effect)
+      addMessageWithTypewriter({ 
+        id: messages.length + 1, 
+        text: "I've generated market analysis content for you. Check the sidebar for details.", 
+        sender: "assistant" 
+      });
+      
+    } catch (error) {
+      console.error("Error fetching generated content:", error);
+      // Add error message with typewriter effect
+      addMessageWithTypewriter({ 
+        id: messages.length + 1, 
+        text: "Sorry, there was an error generating the content. Please try again.", 
+        sender: "assistant" 
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,61 +113,80 @@ const ChatInterface = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Allow clicking on messages to skip typewriter effect
+  const handleMessageClick = () => {
+    if (hasActiveTypewriter()) {
+      skipTypewriter();
+    }
+  };
+
   return (
     <div className="chat-container">
-      {/* Header */}
+      {/* Header Section */}
       <div className="chat-header">
         <div className="chat-header-title">
-          <div className="chat-status-indicator"></div>
-          <span>Chat Interface</span>
+          <span>Chat Assistant</span>
         </div>
         <div className="header-buttons">
           <button 
-            className="sidebar-toggle-btn"
-            onClick={toggleSidebar}
-            aria-label="Toggle sidebar"
+            className="sidebar-toggle-btn" 
+            onClick={() => setShowSidebar((prev) => !prev)}
+            // Removed the disabled condition to ensure button always works
           >
-            {showSidebar ? '→' : '←'}
+            {showSidebar ? '→ Hide' : '← Show'} Sidebar
           </button>
-          <button className="chat-settings-btn" aria-label="Settings">⚙️</button>
+          <button 
+            className="generate-btn" 
+            onClick={handleGenerate} 
+            disabled={loading}
+          >
+            {loading ? "⏳ Generating..." : "⚡ Generate"}
+          </button>
         </div>
       </div>
-      
-      {/* Messages area */}
-      <div className="chat-messages">
-        {messages.map(message => (
-          <div key={message.id} className={`chat-bubble-container ${message.sender}`}>
-            <div className="chat-bubble">{message.text}</div>
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
+
+      {/* Main Chat Layout */}
+      <div className="chat-content">
+        {/* Chat Messages */}
+        <div className="chat-messages">
+          {messages.map((message) => (
+            <div 
+              key={message.id} 
+              className={`chat-bubble-container ${message.sender} ${message.isTyping ? 'typing' : ''}`}
+              onClick={handleMessageClick}
+            >
+              <div className="chat-bubble">
+                {message.text}
+                {message.isTyping && <span className="typing-indicator">▋</span>}
+              </div>
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input Area */}
+        <form onSubmit={handleSubmit} className="chat-input-area">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Type a message..."
+            className="chat-input"
+          />
+          <button 
+            type="submit" 
+            className="chat-send-btn"
+            disabled={loading || hasActiveTypewriter()}
+          >➤</button>
+        </form>
       </div>
-      
-      {/* Input area */}
-      <form onSubmit={handleSubmit} className="chat-input-area">
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="Type a message..."
-          className="chat-input"
-        />
-        <button type="submit" className="chat-send-btn" aria-label="Send message">➤</button>
-        <button 
-          type="button" 
-          onClick={handleGenerate} 
-          className="chat-generate-btn"
-          aria-label="Generate content"
-        >⚡</button>
-      </form>
-      
-      {/* Sidebar Component */}
+
+      {/* Sidebar Component - Always render it but hide it when showSidebar is false */}
       <Sidebar 
         showSidebar={showSidebar}
         setShowSidebar={setShowSidebar}
-        activeNavItem={activeNavItem}
-        setActiveNavItem={setActiveNavItem}
-        content={getActiveContent()}
+        initialContent={sidebarContents}
+        updateContent={setSidebarContents}
       />
     </div>
   );
