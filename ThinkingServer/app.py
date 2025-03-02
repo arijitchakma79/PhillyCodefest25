@@ -47,10 +47,62 @@ def get_state():
         'state': chatbot.get_current_state().value
     })
 
+@app.route('/api/state', methods=['POST'])
+def set_state():
+    """Set the current state of the chatbot."""
+    data = request.get_json()
+    
+    if not data or 'state' not in data:
+        return jsonify({'error': 'Missing required parameter: state'}), 400
+    
+    state_name = data.get('state', '').lower()
+    
+    if state_name == 'ideation':
+        chatbot.set_state(State.IDEATION)
+        return jsonify({
+            'message': f"State changed to: {chatbot.get_current_state().value}",
+            'state': chatbot.get_current_state().value
+        })
+    elif state_name == 'processing':
+        chatbot.set_state(State.PROCESSING)
+        return jsonify({
+            'message': f"State changed to: {chatbot.get_current_state().value}",
+            'state': chatbot.get_current_state().value
+        })
+    elif state_name == 'feedback':
+        chatbot.set_state(State.FEEDBACK)
+        return jsonify({
+            'message': f"State changed to: {chatbot.get_current_state().value}",
+            'state': chatbot.get_current_state().value
+        })
+    else:
+        return jsonify({'error': f"Unknown state: {state_name}"}), 400
+
+@app.route('/api/clear', methods=['POST'])
+def clear():
+    """Clear chat history and knowledge"""
+    try:
+        # Clear history for both agents
+        chatbot.descriptive_agent.clear_history()
+        chatbot.interface_agent.clear_history()
+
+        chatbot.interface_agent.clear_knowledge()
+        chatbot.descriptive_agent.clear_knowledge()
+        
+        # Clear knowledge base
+        knowledge.clear()
+        
+        return jsonify({
+            'message': "Chat history and knowledge cleared!",
+            'state': chatbot.get_current_state().value
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/process', methods=['GET'])
 def process():
     result = json.loads(preprocesser.process_text(chatbot.interface_agent.get_history_text()))
-
+    
     response = requests.post(
         url="http://127.0.0.1:5000/analyze",
         json=result,
@@ -63,14 +115,14 @@ def process():
     result = response.json()
     
     knowledge.add_knowledge(result)
-
-    print(knowledge.get_all_info())
-    print(knowledge.get_info("name of the business"))
-
-
+    chatbot.descriptive_agent.set_knowledge(knowledge.get_all_info())
+    
     return jsonify(result)
 
-    
+@app.route('/api/knowledge', methods=['GET'])
+def get_knowledge():
+    """Get all accumulated knowledge."""
+    return jsonify(knowledge.get_all_info())
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=3000)
