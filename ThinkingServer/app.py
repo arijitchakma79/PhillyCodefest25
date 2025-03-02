@@ -17,6 +17,8 @@ from src.simulation.summarizer_agent import SummarizerAgent
 
 app = Flask(__name__)
 
+CORS(app)
+
 # Initialize the chatbot and preprocesser
 chatbot = Chatbot()
 preprocesser = PreprocesserAgent()
@@ -26,32 +28,43 @@ initial_business_state_agent = InitialBusinessStateAgent()
 simulation = Simulation()
 summarizer_agent = SummarizerAgent()
 
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
+#CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
     """Process a chat message and return the response."""
-    data = request.get_json()
-    
-    if not data or 'text' not in data:
-        return jsonify({'error': 'Missing required parameter: text'}), 400
-    
-    text_input = data.get('text', '')
-    
-    # Process regular chat input
     try:
-        response = chatbot.process_input(text_input)
+        data = request.get_json()
+        print(f"Received data: {data}")  # Log the received data
         
-        # Get current state for the response
-        current_state = chatbot.get_current_state().value
+        if not data or 'text' not in data:
+            return jsonify({'error': 'Missing required parameter: text'}), 400
         
-        return jsonify({
-            'response': response,
-            'state': current_state
-        })
+        text_input = data.get('text', '')
+        print(f"Processing input: {text_input}")  # Log the input text
         
+        # Process regular chat input
+        try:
+            response = chatbot.process_input(text_input)
+            print(f"Got response: {response}")  # Log the response
+            
+            # Get current state for the response
+            current_state = chatbot.get_current_state().value
+            
+            return jsonify({
+                'response': response,
+                'state': current_state
+            })
+        except Exception as e:
+            import traceback
+            print(f"Error in chatbot processing: {str(e)}")
+            print(traceback.format_exc())  # Print the full stack trace
+            return jsonify({'error': str(e)}), 500
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        print(f"Error in request processing: {str(e)}")
+        print(traceback.format_exc())  # Print the full stack trace
+        return jsonify({'error': 'Server error: ' + str(e)}), 500
 
 @app.route('/api/state', methods=['GET'])
 def get_state():
@@ -160,4 +173,4 @@ def get_knowledge():
     return jsonify(knowledge.get_all_info())
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=3000)
+    app.run(debug=True, host='0.0.0.0', port=3001)

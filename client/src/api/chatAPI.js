@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api";
+const API_URL = "http://localhost:3001/api";
 
 // Function to send a message to the chat API
 export const sendMessageToAPI = async (message) => {
