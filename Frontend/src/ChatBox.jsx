@@ -1,5 +1,6 @@
 import { Box, Button, Input, VStack, HStack, Tabs, Textarea } from "@chakra-ui/react"
 import { motion } from "framer-motion";
+import { text } from "framer-motion/client";
 import { useEffect, useState, useRef } from 'react'
 
 
@@ -9,16 +10,39 @@ export default function ChatBox () {
 	const [typingMessage, setTypingMessage] = useState("");
 	const messagesEndRef = useRef(null);
   
-	const handleSend = () => {
-	  if (input.trim() === "") return;
-	  setMessages([...messages, { text: input, sender: "user" }]);
-	  setInput("");
-	  
-	  setTimeout(() => {
-		typeMessage("This is a response from AI");
-	  }, 500);
-	};
-  
+    const handleSend = async () => {
+        if (input.trim() === "") return;
+      
+        // Add user message to chat
+        setMessages([...messages, { text: input, sender: "user" }]);
+      
+        const userMessage = input;
+        setInput("");
+      
+        try {
+          const response = await fetch("http://localhost:3000/api/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "appilcation/json",
+            },
+            body: JSON.stringify({ text: userMessage }),
+          });
+      
+          if (!response.ok) {
+            throw new Error("Failed to send message");
+          }
+      
+          const data = await response.json();
+      
+          // Type out AI response
+          typeMessage(data.text || "No response from AI");
+        } catch (error) {
+          console.error("Error:", error);
+          typeMessage("Error communicating with server.");
+        }
+      };
+      
+      // animates the message typing
 	const typeMessage = (text) => {
 	  setTypingMessage("");
 	  let index = 0;
