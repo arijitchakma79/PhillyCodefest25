@@ -12,6 +12,8 @@ from src.knowledge.knowledge import Knowledge
 from src.output.output_agent import OutputAgent
 from src.simulation.initial_business_state_agent import InitialBusinessStateAgent
 
+from src.simulation.simulation import Simulation 
+
 app = Flask(__name__)
 
 # Initialize the chatbot and preprocesser
@@ -20,6 +22,7 @@ preprocesser = PreprocesserAgent()
 knowledge = Knowledge()
 output_agent = OutputAgent()
 initial_business_state_agent = InitialBusinessStateAgent()
+simulation = Simulation()
 
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
@@ -112,7 +115,7 @@ def process():
     result = json.loads(preprocesser.process_text(chatbot.interface_agent.get_history_text()))
     print(result)
 
-    response = requests.post(
+    """response = requests.post(
         url="http://127.0.0.1:5000/pipeline/analyze",
         json=result,
         headers={
@@ -120,18 +123,22 @@ def process():
         }
     )
     
-    # Get the JSON response from the other server
     result = response.json()
     print(result)
-    
-    knowledge.add_knowledge(result)
+    """
 
+    knowledge.add_knowledge(result)
+    
     initial_business_state = initial_business_state_agent.process_text(knowledge.get_all_info_text())
 
     print("-------------------------------------------")
     print("Initial Business State:")
     print(initial_business_state)
+    print("-------------------------------------------")
+    simulation_results = simulation.run_simulaton(initial_business_state)
+    print(simulation_results)
 
+    print("-------------------------------------------")
     chatbot.descriptive_agent.set_knowledge(knowledge.get_all_info())
     output = output_agent.process_text(knowledge.get_all_info_text())
     return jsonify(result)
