@@ -10,6 +10,7 @@ class Config:
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     SERP_API_KEY = os.getenv("SERP_API_KEY")
     NEWS_API_KEY = os.getenv("NEWS_API_KEY")
+    PERPLEXITY_API_KEY = os.getenv("PERPLEXITY_API_KEY")
     DEBUG = True
 
 

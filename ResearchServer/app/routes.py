@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from app.services import analyze_idea, analyze_google_trends  # Updated import to match function name
+from app.services import analyze_idea, analyze_google_trends, analyze_competitors  
 
 business_routes = Blueprint("business_routes", __name__)
 
@@ -27,6 +27,20 @@ def analyze_trends():
 
         insights = analyze_google_trends(trends_data)  
         return jsonify({"insights": insights}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@business_routes.route("/competitors/analyze", methods=["POST"])
+def analyze_market_competitors():
+    """API endpoint to analyze market competitors"""
+    try:
+        business_data = request.get_json()
+        if not business_data:
+            return jsonify({"error": "Invalid JSON input"}), 400
+
+        competitor_analysis = analyze_competitors(business_data)
+        return jsonify(competitor_analysis), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
