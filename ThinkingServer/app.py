@@ -13,6 +13,7 @@ from src.output.output_agent import OutputAgent
 from src.simulation.initial_business_state_agent import InitialBusinessStateAgent
 
 from src.simulation.simulation import Simulation 
+from src.simulation.summarizer_agent import SummarizerAgent
 
 app = Flask(__name__)
 
@@ -23,6 +24,7 @@ knowledge = Knowledge()
 output_agent = OutputAgent()
 initial_business_state_agent = InitialBusinessStateAgent()
 simulation = Simulation()
+summarizer_agent = SummarizerAgent()
 
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
@@ -137,10 +139,19 @@ def process():
     print("-------------------------------------------")
     simulation_results = simulation.run_simulaton(initial_business_state)
     print(simulation_results)
+    print(str(simulation.get_state_tree_json()))
+    simulation_summary = summarizer_agent.process_text(str(simulation.get_state_tree_json()))
+    print("Summary:")
+    print(simulation_summary)
+    
 
     print("-------------------------------------------")
     chatbot.descriptive_agent.set_knowledge(knowledge.get_all_info())
-    output = output_agent.process_text(knowledge.get_all_info_text())
+    output = json.loads(output_agent.process_text(knowledge.get_all_info_text()))
+    output["thinking"] = json.loads(simulation_summary)
+
+    print(output)
+
     return jsonify(result)
 
 @app.route('/api/knowledge', methods=['GET'])
