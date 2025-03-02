@@ -9,6 +9,11 @@ export default function ChatBox () {
 	const [input, setInput] = useState("");
 	const [typingMessage, setTypingMessage] = useState("");
 	const messagesEndRef = useRef(null);
+
+	useEffect(() => {
+		// Initial message
+		setMessages([{ text: "Hello! How can I assist you today?", sender: "ai" }]);
+	  }, []);
   
     const handleSend = async () => {
         if (input.trim() === "") return;
@@ -64,10 +69,6 @@ export default function ChatBox () {
 		}
 	  };
 	  
-	  
-	  
-	  
-  
 	useEffect(() => {
 	  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 	}, [messages, typingMessage]);
@@ -83,22 +84,30 @@ export default function ChatBox () {
 			h="300px"
 		  >
 			{messages.map((msg, index) => (
-			  <motion.div
+			<motion.div
 				key={index}
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ duration: 0.5 }}
 				style={{
-				  alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
-				  background: msg.sender === "user" ? "#f1f1f1" : "#ffffff",
-				  padding: "8px",
-				  borderRadius: "8px",
-				  maxWidth: "75%",
-				  marginBottom: "8px"
+				display: "flex",
+				justifyContent: msg.sender === "user" ? "flex-end" : "flex-start", // Align user to right, AI to left
 				}}
-			  >
+			>
+				<div
+				style={{
+					background: msg.sender === "user" ? "#E2E8F0" : "#ffffff", // Blue for user, Gray for AI
+					color: "black", //janky
+					padding: "8px 12px",
+					borderRadius: "12px",
+					maxWidth: "75%",
+					marginBottom: "8px",
+					textAlign: msg.sender === "user" ? "right" : "left", // Right-align user text
+				}}
+				>
 				{msg.text}
-			  </motion.div>
+				</div>
+			</motion.div>
 			))}
 			{typingMessage && (
 			  <motion.div
