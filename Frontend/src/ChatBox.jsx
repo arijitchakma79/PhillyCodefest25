@@ -23,7 +23,7 @@ export default function ChatBox () {
           const response = await fetch("http://localhost:3000/api/chat", {
             method: "POST",
             headers: {
-              "Content-Type": "appilcation/json",
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({ text: userMessage }),
           });
@@ -35,7 +35,7 @@ export default function ChatBox () {
           const data = await response.json();
       
           // Type out AI response
-          typeMessage(data.text || "No response from AI");
+          typeMessage(data.response || "No response from AI");
         } catch (error) {
           console.error("Error:", error);
           typeMessage("Error communicating with server.");
@@ -45,7 +45,7 @@ export default function ChatBox () {
       // animates the message typing
 	const typeMessage = (text) => {
 	  setTypingMessage("");
-	  let index = 0;
+	  let index = 1;
 	  const interval = setInterval(() => {
 		if (index < text.length) {
 		  setTypingMessage((prev) => prev + text[index]);
