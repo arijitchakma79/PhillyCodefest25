@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import '../styles/chatInterface.css';
+// Import the Sidebar from the correct path - adjust as needed for your file structure
+import Sidebar from '../components/sidebar';
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState([
@@ -8,7 +10,13 @@ const ChatInterface = () => {
   ]);
   const [inputValue, setInputValue] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
-  const [sidebarContent, setSidebarContent] = useState("");
+  const [sidebarContents, setSidebarContents] = useState({
+    code: "",
+    data: "",
+    analysis: "",
+    results: ""
+  });
+  const [activeNavItem, setActiveNavItem] = useState(0);
   const messagesEndRef = useRef(null);
 
   const handleSubmit = (e) => {
@@ -34,6 +42,7 @@ const ChatInterface = () => {
   };
 
   const handleGenerate = () => {
+    // Example content for each tab
     const codeExamples = [
       `function greet() {\n  console.log("Hello, world!");\n}\n\ngreet();`,
       `def fibonacci(n):\n    if n <= 1:\n        return n\n    return fibonacci(n-1) + fibonacci(n-2)\n\nprint(fibonacci(10))`,
@@ -42,7 +51,15 @@ const ChatInterface = () => {
     ];
     
     const randomCode = codeExamples[Math.floor(Math.random() * codeExamples.length)];
-    setSidebarContent(randomCode);
+    
+    // Update content for all tabs (as an example)
+    setSidebarContents({
+      code: randomCode,
+      data: "Sample data will appear here",
+      analysis: "Analysis information will appear here",
+      results: "Results will be displayed here"
+    });
+    
     setShowSidebar(true);
   };
 
@@ -53,6 +70,22 @@ const ChatInterface = () => {
     } else {
       // If sidebar is showing, just toggle it off
       setShowSidebar(false);
+    }
+  };
+
+  // Get the content for the active tab
+  const getActiveContent = () => {
+    switch (activeNavItem) {
+      case 0:
+        return sidebarContents.code;
+      case 1:
+        return sidebarContents.data;
+      case 2:
+        return sidebarContents.analysis;
+      case 3:
+        return sidebarContents.results;
+      default:
+        return sidebarContents.code;
     }
   };
 
@@ -108,22 +141,14 @@ const ChatInterface = () => {
         >⚡</button>
       </form>
       
-      {/* Sidebar for Generated Content */}
-      {showSidebar && (
-        <div className="sidebar">
-          <div className="sidebar-header">
-            <h3>Generated Content</h3>
-            <button 
-              onClick={() => setShowSidebar(false)} 
-              className="sidebar-close"
-              aria-label="Close sidebar"
-            >✕</button>
-          </div>
-          <div className="sidebar-content">
-            <pre>{sidebarContent}</pre>
-          </div>
-        </div>
-      )}
+      {/* Sidebar Component */}
+      <Sidebar 
+        showSidebar={showSidebar}
+        setShowSidebar={setShowSidebar}
+        activeNavItem={activeNavItem}
+        setActiveNavItem={setActiveNavItem}
+        content={getActiveContent()}
+      />
     </div>
   );
 };

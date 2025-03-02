@@ -165,6 +165,12 @@ body, html {
   .chat-generate-btn {
     background-color: #10b981;
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
   }
   
   .chat-generate-btn:hover {
@@ -173,7 +179,7 @@ body, html {
   
   /* Sidebar */
   .sidebar {
-    width: 30%;
+    width: 70%;
     background-color: white;
     border-left: 1px solid #ddd;
     position: fixed;
@@ -209,6 +215,36 @@ body, html {
     margin: 0;
     font-size: 1.1rem;
     color: #333;
+  }
+  
+  .sidebar-navbar {
+    display: flex;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar-navbar-item {
+    flex: 1;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #555;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  
+  .sidebar-navbar-item:hover {
+    color: #2563eb;
+    background-color: #f0f0f0;
+  }
+  
+  .sidebar-navbar-item.active {
+    color: #2563eb;
+    border-bottom: 2px solid #2563eb;
+    font-weight: 500;
   }
   
   .sidebar-content {
