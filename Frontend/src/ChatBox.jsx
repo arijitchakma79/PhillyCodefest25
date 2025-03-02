@@ -43,20 +43,26 @@ export default function ChatBox () {
       };
       
       // animates the message typing
-	const typeMessage = (text) => {
-	  setTypingMessage("");
-	  let index = 1;
-	  const interval = setInterval(() => {
-		if (index < text.length) {
-		  setTypingMessage((prev) => prev + text[index]);
-		  index++;
-		} else {
-		  clearInterval(interval);
-		  setMessages((prev) => [...prev, { text, sender: "ai" }]);
-		  setTypingMessage("");
+	  const typeMessage = async (text) => {
+		let tempMessage = "";
+		const newMessages = [...messages, { text: "", sender: "ai" }]; // Add empty message first
+		setMessages(newMessages);
+	  
+		const messageIndex = newMessages.length - 1; // Index of the message being typed
+	  
+		for (let i = 0; i < text.length; i++) {
+		  tempMessage += text[i];
+	  
+		  // Directly modify the message in state without re-rendering each time
+		  newMessages[messageIndex] = { text: tempMessage, sender: "ai" };
+		  
+		  // Use a ref to force the latest value to be used in the loop
+		  setMessages([...newMessages]); 
+	  
+		  await new Promise(res => setTimeout(res, 30)); // Consistent speed
 		}
-	  }, 50);
-	};
+	  };
+	  
   
 	useEffect(() => {
 	  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
