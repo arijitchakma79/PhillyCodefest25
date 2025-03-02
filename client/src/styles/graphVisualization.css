@@ -1,0 +1,77 @@
+/* GraphVisualization.css */
+
+.graphs-container {
+    width: 100%;
+    padding: 10px 0;
+  }
+  
+  .graph-item {
+    margin-bottom: 30px;
+  }
+  
+  .graph-title {
+    font-size: 20px;
+    color: #1e40af;
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+  
+  .graph-chart {
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .graph-data-table {
+    margin-top: 20px;
+  }
+  
+  .graph-data-table h3 {
+    font-size: 16px;
+    color: #3b82f6;
+    margin-bottom: 10px;
+  }
+  
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .data-table th,
+  .data-table td {
+    border: 1px solid #e2e8f0;
+    padding: 8px 12px;
+    text-align: center;
+  }
+  
+  .data-table th {
+    background: #f8fafc;
+    font-weight: 600;
+    color: #1e40af;
+  }
+  
+  .data-table tr:nth-child(even) {
+    background: #f9fafb;
+  }
+  
+  .no-graph-data {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+    color: #64748b;
+    font-style: italic;
+  }
+  
+  .graph-divider {
+    margin: 30px 0;
+    border: none;
+    border-top: 1px solid #e2e8f0;
+  }

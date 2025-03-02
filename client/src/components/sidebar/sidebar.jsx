@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SidebarHeader from './sidebarHeader';
-import TreeVisualization from '../treeVisualization'
+import TreeVisualization from '../treeVisualization';
+import GraphVisualization from '../graphVisualization';
 import '../../styles/sidebar.css';
 
 const Sidebar = ({ showSidebar, setShowSidebar, initialContent, updateContent, rawData }) => {
@@ -21,6 +22,32 @@ const Sidebar = ({ showSidebar, setShowSidebar, initialContent, updateContent, r
     { id: 'graphs', label: 'Graphs' }
   ];
 
+  // Convert markdown to HTML
+  const renderMarkdown = (text) => {
+    // Simple markdown-like formatting
+    // Convert headers
+    let formattedText = text
+      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+      // Convert bullet points
+      .replace(/^• (.*$)/gm, '<li>$1</li>')
+      // Wrap lists
+      .replace(/<li>(.*?)<\/li>/g, (match) => {
+        return '<ul>' + match + '</ul>';
+      })
+      // Remove duplicate list tags
+      .replace(/<\/ul><ul>/g, '')
+      // Bold text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // Italic text
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      // Line breaks
+      .replace(/\n/g, '<br>');
+    
+    return { __html: formattedText };
+  };
+
   const renderTabContent = () => {
     const activeTabId = tabs[activeTab].id;
     const tabContent = content[activeTabId];
@@ -36,14 +63,26 @@ const Sidebar = ({ showSidebar, setShowSidebar, initialContent, updateContent, r
         </div>
       );
     }
+
+    // Special handling for the graphs visualization
+    if (activeTabId === 'graphs') {
+      return (
+        <div className="sidebar-content-wrapper">
+          <h2 className="sidebar-content-title">{tabs[activeTab].label}</h2>
+          <div className="sidebar-content-box">
+            <GraphVisualization data={rawData} />
+          </div>
+        </div>
+      );
+    }
     
-    // Regular text content for other tabs
+    // Regular text content for other tabs with markdown formatting
     return (
       <div className="sidebar-content-wrapper">
         <h2 className="sidebar-content-title">{tabs[activeTab].label}</h2>
         <div className="sidebar-content-box">
           {tabContent ? (
-            <pre>{tabContent}</pre>
+            <div dangerouslySetInnerHTML={renderMarkdown(tabContent)} />
           ) : (
             <p className="no-data-message">No data available</p>
           )}
