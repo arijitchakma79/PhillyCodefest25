@@ -2,10 +2,12 @@ from src.simulation.possible_actions_agent import PossibleActionsAgent
 from src.simulation.state_prediction_agent import StatePredictionAgent
 import json
 import concurrent.futures
+import re
 
 class Simulation:
-    def __init__(self):
-        self.__month_length = 3
+    def __init__(self, top_states_count=3):
+        self.__month_length = 6
+        self.__top_states_count = top_states_count  # Number of top states to keep
         
         self.__state_history = []  # List of states by month
         self.__current_month = 0
@@ -43,6 +45,48 @@ class Simulation:
         
         self.__add_state_to_tree(tree["next_steps"][current], path[1:], state_text, action)
     
+    def __extract_metrics(self, state_text):
+        """
+        Extract revenue and funding from state text
+        Returns a tuple of (revenue, funding) or (0, 0) if not found
+        """
+        revenue = 0
+        funding = 0
+        
+        # Using regex to find revenue and funding in the state text
+        revenue_match = re.search(r'revenue[:\s]+[$]?(\d+(?:\.\d+)?)[KMB]?', state_text, re.IGNORECASE)
+        funding_match = re.search(r'funding[:\s]+[$]?(\d+(?:\.\d+)?)[KMB]?', state_text, re.IGNORECASE)
+        
+        if revenue_match:
+            revenue_str = revenue_match.group(1)
+            try:
+                revenue = float(revenue_str)
+                # Handle K, M, B suffixes if present
+                if 'K' in revenue_match.group(0):
+                    revenue *= 1000
+                elif 'M' in revenue_match.group(0):
+                    revenue *= 1000000
+                elif 'B' in revenue_match.group(0):
+                    revenue *= 1000000000
+            except ValueError:
+                revenue = 0
+        
+        if funding_match:
+            funding_str = funding_match.group(1)
+            try:
+                funding = float(funding_str)
+                # Handle K, M, B suffixes if present
+                if 'K' in funding_match.group(0):
+                    funding *= 1000
+                elif 'M' in funding_match.group(0):
+                    funding *= 1000000
+                elif 'B' in funding_match.group(0):
+                    funding *= 1000000000
+            except ValueError:
+                funding = 0
+        
+        return (revenue, funding)
+    
     def run_simulaton(self, initial_state):
         # Initialize state history with initial state
         self.__state_history = [[initial_state]]
@@ -61,12 +105,27 @@ class Simulation:
                 
         print("Simulation:")
         for t in range(self.__month_length):
-            new_states = []
             current_states = self.__state_history[self.__current_month]
             
-            # Prepare multithreading data structures
+            # 1. Rank current states by revenue and funding
+            state_metrics = []
+            for state in current_states:
+                revenue, funding = self.__extract_metrics(state)
+                # Calculate a simple score (can be adjusted with weights if needed)
+                score = revenue + funding
+                state_metrics.append((state, score))
+            
+            # Sort states by score (highest first) and take top n states
+            state_metrics.sort(key=lambda x: x[1], reverse=True)
+            top_states = [state for state, _ in state_metrics[:self.__top_states_count]]
+            
+            print(f"Month {t+1}: Selecting top {len(top_states)} states out of {len(current_states)}")
+            
+            # 2. Process only the top states
+            new_states = []
             state_action_pairs = []
-            for current_state in current_states:
+            
+            for current_state in top_states:
                 actions_json = json.loads(self.__possible_actions_agent.process_text(current_state))
                 if "actions" in actions_json:
                     for action in actions_json["actions"]:
@@ -123,3 +182,7 @@ class Simulation:
     def get_state_tree_json(self):
         """Return the full state tree as a JSON string"""
         return json.dumps(self.__state_tree, indent=2)
+    
+    def assign_knowledge(self, knowledge):
+        self.__possible_actions_agent.set_knowledge(knowledge)
+        self.__state_prediction_agent.set_knowledge(knowledge)

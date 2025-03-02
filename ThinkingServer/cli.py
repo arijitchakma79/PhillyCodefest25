@@ -5,7 +5,7 @@ import sys
 class ChatbotClient:
     """Client for interacting with the chatbot server API."""
     
-    def __init__(self, base_url="http://localhost:3000"):
+    def __init__(self, base_url="http://localhost:3001"):
         self.base_url = base_url
     
     def chat(self, text):

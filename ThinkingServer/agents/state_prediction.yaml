@@ -40,6 +40,7 @@ instructions: |
       "competitor_pressure": "",
       "market_sentiment": ""
     }
+    I also want you to consider if this state has any future or not, you can be pessimistic about this, if it looks like there is no point in investigating this path, put "end" tag in the output json, so system will know
 knowledge: ""
 store_history: false
 output_format: "JSON"
