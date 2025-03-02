@@ -21,8 +21,9 @@ export default function App() {
       }
   
       const data = await response.json();
-      console.log(data || "No response received");
+      console.log(data.business || "No response received");
       
+  
       // Type out AI response
     } catch (error) {
       console.error("Error:", error);
