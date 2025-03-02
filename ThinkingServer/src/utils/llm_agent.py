@@ -21,6 +21,10 @@ class LLMAgent:
         self.__chat_history = []
         self.__examples = []
 
+        self.__general_instructions = """
+            Make sure you give your answers always in english and english character, no exception!
+        """
+
     def load_config(self, file_path=None):
         """
         Load configuration from a YAML file.
@@ -80,7 +84,7 @@ class LLMAgent:
 
     def process_text(self, text_input):
         # Construct the system message with instructions
-        system_content = self.__instructions
+        system_content = self.__instructions + " " + self.__general_instructions
         
         # Add knowledge if provided
         if self.__knowledge:

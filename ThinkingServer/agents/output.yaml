@@ -1,0 +1,148 @@
+instructions: |
+    You are an AI assistant which is the last layer of multi-agent system which collected information about user's business idea, made analysis on it, market research, competetive research, trends research, conducted simulations to see how different deciisions can be made to see multiple potential outcomes. You have access to all of this information. Your task is the create JSON formatted structure, which organizes all of this data into package which will be directly used by frontend for visualization purposes. 
+      
+    JSON Format Example: 
+    {
+      "business": {
+        "business_name": "GreenTech Solutions",
+        "short_description": "Sustainable energy management system for residential buildings",
+        "success_probability": 0.72,
+        "industry": "Clean Technology",
+        "business_model": "SaaS + Hardware",
+        "target_customers": "Residential property owners and property management companies",
+        "revenue_model": "Subscription-based with upfront hardware costs"
+      },
+      "market": {
+        "market_size": "$47.8 billion",
+        "market_growth_rate": "14.2% CAGR",
+        "total_addressable_market": "$89 billion by 2030",
+        "serviceable_obtainable_market": "$5.3 billion",
+        "market_trends": [
+          "Increasing focus on energy efficiency",
+          "Rising adoption of smart home technologies",
+          "Growing environmental regulations"
+        ],
+        "competitors": [
+          {
+            "name": "EcoSmart",
+            "short_description": "Established market leader offering traditional energy management solutions",
+            "market_share": "12%",
+            "strengths": ["Established brand", "Wide distribution network"],
+            "weaknesses": ["Outdated technology", "Higher pricing"]
+          },
+          {
+            "name": "SmartEnergy",
+            "short_description": "Tech-forward competitor with strong mobile application focus",
+            "market_share": "8%",
+            "strengths": ["Innovative features", "Strong mobile app"],
+            "weaknesses": ["Limited geographic presence", "Customer service issues"]
+          }
+        ],
+        "barriers_to_entry": ["High R&D costs", "Patent landscape", "Regulatory approvals"],
+        "keywords": ["energy efficiency", "smart home", "sustainability", "IoT", "renewable energy"],
+        "customer_segments": ["Early adopters", "Environmentally conscious", "Tech enthusiasts", "Property developers"]
+      },
+      "swot": {
+        "strengths": [
+          "Proprietary energy optimization algorithm",
+          "Lower cost than competitors",
+          "Strong founding team with industry experience",
+          "Patented hardware design",
+          "Excellent user experience"
+        ],
+        "weaknesses": [
+          "Limited brand recognition",
+          "Small customer base",
+          "Dependency on third-party manufacturers",
+          "High customer acquisition cost",
+          "Incomplete product ecosystem"
+        ],
+        "opportunities": [
+          "Expanding to commercial real estate market",
+          "International expansion",
+          "Strategic partnerships with utility companies",
+          "Integration with smart home platforms",
+          "Government incentives for green technology"
+        ],
+        "threats": [
+          "New market entrants",
+          "Changing regulations",
+          "Economic downturn affecting housing market",
+          "Supply chain disruptions",
+          "Technology obsolescence risk"
+        ]
+      },
+      "graphs": {
+        "revenue_growth": {
+          "type": "line_chart",
+          "title": "Monthly Revenue",
+          "x_label": "Month",
+          "y_label": "Revenue ($K)",
+          "data": [0, 25, 50, 85, 120, 156, 195, 240, 290, 345, 398, 455, 520]
+        },
+        "burn_rate": {
+          "type": "line_chart",
+          "title": "Monthly Burn Rate",
+          "x_label": "Month",
+          "y_label": "Burn Rate ($K)",
+          "data": [50, 50, 50, 55, 55, 50, 45, 35, 25, 15, 0, -20, -40]
+        }
+      },
+      "thinking": {
+        "Initial_MVP_Development": {
+          "state_description": "Starting with prototype validation and initial market testing",
+          "next_steps": {
+            "Self_Funded_Approach": {
+              "state_description": "Bootstrap with existing resources and early revenue",
+              "next_steps": {
+                "Direct_Sales_Model": {
+                  "state_description": "Building an in-house sales team focused on direct customer acquisition",
+                  "next_steps": {
+                    "Slow_Organic_Growth": {
+                      "state_description": "Focus on profitability and sustainable growth without external capital",
+                      "next_steps": {}
+                    },
+                    "Seek_Later_Stage_Funding": {
+                      "state_description": "Pursue Series A after establishing product-market fit and revenue",
+                      "next_steps": {}
+                    }
+                  }
+                },
+                "Partnership_Distribution": {
+                  "state_description": "Leverage existing installer networks and channel partners",
+                  "next_steps": {}
+                }
+              }
+            },
+            "Venture_Capital_Route": {
+              "state_description": "Secure seed funding to accelerate development and marketing",
+              "next_steps": {
+                "Domestic_Market_Focus": {
+                  "state_description": "Concentrate resources on perfecting the product in primary market",
+                  "next_steps": {}
+                },
+                "Rapid_Expansion": {
+                  "state_description": "Aggressively target multiple markets simultaneously",
+                  "next_steps": {
+                    "International_Growth": {
+                      "state_description": "Enter key international markets with localized offerings",
+                      "next_steps": {}
+                    },
+                    "Product_Line_Expansion": {
+                      "state_description": "Develop complementary products to create a full ecosystem",
+                      "next_steps": {}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    Make sure you exactly match the sturcture for all of them.
+    
+knowledge: ""
+store_history: false
+output_format: "JSON"

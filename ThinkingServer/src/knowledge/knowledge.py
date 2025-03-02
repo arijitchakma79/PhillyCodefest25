@@ -6,9 +6,7 @@ class Knowledge:
         self.__knowledge = []
 
     def __update_agent_knowledge(self):
-        knowledge_text = ""
-        for element in self.__knowledge:
-            knowledge_text += str(element) + "\n"
+        knowledge_text = self.get_all_info_text()
 
         self.__knowledge_agent.set_knowledge(knowledge_text)
         return knowledge_text
@@ -18,6 +16,11 @@ class Knowledge:
 
     def get_all_info(self):
         return self.__knowledge
+    
+    def get_all_info_text(self):
+        knowledge_text = ""
+        for element in self.__knowledge:
+            knowledge_text += str(element) + "\n"
 
     def get_info(self, topic):
         self.__update_agent_knowledge()

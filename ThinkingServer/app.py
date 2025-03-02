@@ -7,6 +7,7 @@ from src.agents.preprocesser_agent import PreprocesserAgent
 from src.utils.state_manager import State
 from src.utils.llm_agent import OutputFormat
 from src.knowledge.knowledge import Knowledge
+from src.output.output_agent import OutputAgent
 
 app = Flask(__name__)
 
@@ -14,6 +15,12 @@ app = Flask(__name__)
 chatbot = Chatbot()
 preprocesser = PreprocesserAgent()
 knowledge = Knowledge()
+output_agent = OutputAgent()
+
+@app.after_request
+def add_restrictive_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = 'null'  # Effectively disables CORS
+    return response
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
@@ -118,9 +125,9 @@ def process():
 
     chatbot.descriptive_agent.set_knowledge(knowledge.get_all_info())
 
+    output = output_agent.process_text(knowledge.get_all_info_text())
 
-    
-    return jsonify(result)
+    return jsonify(output)
 
 @app.route('/api/knowledge', methods=['GET'])
 def get_knowledge():
