@@ -3,7 +3,8 @@ from app.services import (
     analyze_idea, 
     analyze_google_trends, 
     analyze_competitors, 
-    analyze_business_pipeline
+    analyze_business_pipeline,
+    analyze_swot
 )
 
 business_routes = Blueprint("business_routes", __name__)
@@ -46,6 +47,31 @@ def analyze_market_competitors():
 
         competitor_analysis = analyze_competitors(business_data)
         return jsonify(competitor_analysis), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@business_routes.route("/swot/analyze", methods=["POST"])
+def analyze_business_swot():
+    """
+    API endpoint to create a SWOT analysis based on business and competitor data
+    
+    Expected JSON input format:
+    {
+        "businessData": {business analysis output},
+        "competitorData": {competitor analysis output}
+    }
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid JSON input"}), 400
+        
+        if "businessData" not in data or "competitorData" not in data:
+            return jsonify({"error": "Missing required fields: businessData and competitorData"}), 400
+            
+        swot_analysis = analyze_swot(data["businessData"], data["competitorData"])
+        return jsonify(swot_analysis), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
