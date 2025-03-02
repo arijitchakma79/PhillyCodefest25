@@ -21,6 +21,7 @@ class Knowledge:
         knowledge_text = ""
         for element in self.__knowledge:
             knowledge_text += str(element) + "\n"
+        return knowledge_text
 
     def get_info(self, topic):
         self.__update_agent_knowledge()
