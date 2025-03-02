@@ -5,7 +5,7 @@ import json
 from flask_cors import CORS
 
 from src.chatbot.chatbot import Chatbot
-from src.agents.preprocesser_agent import PreprocesserAgent
+from src.knowledge.preprocesser_agent import PreprocesserAgent
 from src.utils.state_manager import State
 from src.utils.llm_agent import OutputFormat
 from src.knowledge.knowledge import Knowledge
@@ -124,9 +124,11 @@ def process():
 
     chatbot.descriptive_agent.set_knowledge(knowledge.get_all_info())
 
+    #print(knowledge.get_all_info_text())
     output = output_agent.process_text(knowledge.get_all_info_text())
 
-    return jsonify(output)
+    print(output)
+    return jsonify(json.loads(output))
 
 @app.route('/api/knowledge', methods=['GET'])
 def get_knowledge():
