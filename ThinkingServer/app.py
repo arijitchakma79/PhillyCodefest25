@@ -165,7 +165,7 @@ def process():
 
     print(output)
 
-    return jsonify(result)
+    return jsonify(output)
 
 @app.route('/api/knowledge', methods=['GET'])
 def get_knowledge():

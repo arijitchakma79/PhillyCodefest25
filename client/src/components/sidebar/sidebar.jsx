@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import SidebarHeader from './sidebarHeader';
+import TreeVisualization from '../treeVisualization'
 import '../../styles/sidebar.css';
 
-const Sidebar = ({ showSidebar, setShowSidebar, initialContent, updateContent }) => {
+const Sidebar = ({ showSidebar, setShowSidebar, initialContent, updateContent, rawData }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [content, setContent] = useState(initialContent);
 
@@ -13,16 +14,30 @@ const Sidebar = ({ showSidebar, setShowSidebar, initialContent, updateContent })
 
   // Tab sections
   const tabs = [
-    { id: 'marketTrends', label: 'Market Trends' },
-    { id: 'competitorResearch', label: 'Competitor Research' },
+    { id: 'marketTrends', label: 'Business Information' },
+    { id: 'competitorResearch', label: 'Market Research' },
     { id: 'swotAnalysis', label: 'SWOT Analysis' },
-    { id: 'simulate', label: 'Simulate' }
+    { id: 'simulate', label: 'Deep Simulation' },
+    { id: 'graphs', label: 'Graphs' }
   ];
 
   const renderTabContent = () => {
     const activeTabId = tabs[activeTab].id;
     const tabContent = content[activeTabId];
     
+    // Special handling for the tree visualization
+    if (activeTabId === 'simulate' && tabContent === 'RENDER_TREE_VISUALIZATION') {
+      return (
+        <div className="sidebar-content-wrapper">
+          <h2 className="sidebar-content-title">{tabs[activeTab].label}</h2>
+          <div className="sidebar-content-box tree-container">
+            <TreeVisualization data={rawData?.thinking || rawData} />
+          </div>
+        </div>
+      );
+    }
+    
+    // Regular text content for other tabs
     return (
       <div className="sidebar-content-wrapper">
         <h2 className="sidebar-content-title">{tabs[activeTab].label}</h2>

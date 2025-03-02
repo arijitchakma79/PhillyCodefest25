@@ -1,7 +1,7 @@
 import React from 'react';
 
 const SidebarNavbar = ({ activeNavItem, setActiveNavItem }) => {
-  const navItems = ['Market Trends', 'Competitor Research', 'SWOT Analysis', 'Simulate'];
+  const navItems = ['Market Trends', 'Business Information', 'SWOT Analysis', 'Deep Simulation'];
 
   return (
     <nav className="sidebar-navbar">

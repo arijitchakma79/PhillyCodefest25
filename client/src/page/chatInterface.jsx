@@ -3,18 +3,29 @@ import '../styles/chatInterface.css';
 import Sidebar from '../components/sidebar/sidebar';
 import { sendMessageToAPI, fetchGeneratedContent } from '../api/chatAPI';
 import { useTypewriterEffect } from '../utils/typewriter';
+import { processApiResponse } from '../utils/dataFormatters';
 
 const ChatInterface = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    // Initial greeting message from the assistant
+    { 
+      id: 1, 
+      text: "Hello, can you tell me your business idea?", 
+      sender: "assistant" 
+    }
+  ]);
   const [inputValue, setInputValue] = useState("");
   const [showSidebar, setShowSidebar] = useState(false);
-  // Fixed to match the sidebar component's expected keys
+  // Ensure we have all 5 sections represented in the state
   const [sidebarContents, setSidebarContents] = useState({
-    marketTrends: "",
-    competitorResearch: "",
-    swotAnalysis: "",
-    simulate: "" // Changed from 'simulation' to 'simulate' to match the sidebar component
+    marketTrends: "", // Business Information
+    competitorResearch: "", // Market Research
+    swotAnalysis: "", // SWOT Analysis
+    simulate: "", // Deep Simulation
+    graphs: "" // Graphs
   });
+  // Store the raw data for tree visualization
+  const [rawData, setRawData] = useState(null);
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
   
@@ -24,9 +35,9 @@ const ChatInterface = () => {
     skipTypewriter,
     hasActiveTypewriter
   } = useTypewriterEffect(messages, setMessages, {
-    typingSpeed: 25, // Milliseconds between characters
-    initialDelay: 400, // Delay before typing starts
-    randomizeSpeed: true // Add some randomness to typing speed
+    typingSpeed: 25,
+    initialDelay: 400,
+    randomizeSpeed: true
   });
 
   // Handles user message submission
@@ -74,17 +85,17 @@ const ChatInterface = () => {
     
     setLoading(true);
     try {
-      // Example of what the API might return
+      // Fetch the generated data from the API
       const generatedData = await fetchGeneratedContent();
       
-      // Update the sidebar content with the generated data
-      // Map the API response keys to the sidebar expected keys
-      setSidebarContents({
-        marketTrends: generatedData.marketTrends || "Market trends analysis shows increasing demand for sustainable products with 28% YoY growth.",
-        competitorResearch: generatedData.competitorResearch || "Main competitors include GreenTech (market share: 34%), EcoSolutions (22%), and SustainCorp (18%).",
-        swotAnalysis: generatedData.swotAnalysis || "Strengths: Strong R&D team\nWeaknesses: Limited market presence\nOpportunities: Emerging markets\nThreats: Increasing regulations",
-        simulate: generatedData.simulation || "Sales forecast model predicts 18-22% growth with current strategy." // Map 'simulation' from API to 'simulate' for sidebar
-      });
+      // Store the raw data for tree visualization
+      setRawData(generatedData);
+      
+      // Process the received JSON data for formatted display
+      const formattedContent = processApiResponse(generatedData);
+      
+      // Update the sidebar content with the formatted data
+      setSidebarContents(formattedContent);
       
       // Show the sidebar after content is generated
       setShowSidebar(true);
@@ -92,7 +103,7 @@ const ChatInterface = () => {
       // Add a message indicating content was generated (with typewriter effect)
       addMessageWithTypewriter({ 
         id: messages.length + 1, 
-        text: "I've generated market analysis content for you. Check the sidebar for details.", 
+        text: "I've generated business analysis content for you. Check the sidebar for details.", 
         sender: "assistant" 
       });
       
@@ -109,6 +120,7 @@ const ChatInterface = () => {
     }
   };
 
+  // Auto-scroll to the bottom of messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -131,7 +143,6 @@ const ChatInterface = () => {
           <button 
             className="sidebar-toggle-btn" 
             onClick={() => setShowSidebar((prev) => !prev)}
-            // Removed the disabled condition to ensure button always works
           >
             {showSidebar ? '→ Hide' : '← Show'} Sidebar
           </button>
@@ -181,12 +192,13 @@ const ChatInterface = () => {
         </form>
       </div>
 
-      {/* Sidebar Component - Always render it but hide it when showSidebar is false */}
+      {/* Sidebar Component */}
       <Sidebar 
         showSidebar={showSidebar}
         setShowSidebar={setShowSidebar}
         initialContent={sidebarContents}
         updateContent={setSidebarContents}
+        rawData={rawData}  // Pass the raw data for tree visualization
       />
     </div>
   );
