@@ -130,7 +130,7 @@ def process():
     result = json.loads(preprocesser.process_text(chatbot.interface_agent.get_history_text()))
     print(result)
 
-    response = requests.post(
+    """response = requests.post(
         url="http://127.0.0.1:5000/pipeline/analyze",
         json=result,
         headers={
@@ -139,7 +139,7 @@ def process():
     )
     
     result = response.json()
-    print(result)
+    print(result)"""
     
 
     knowledge.add_knowledge(result)
