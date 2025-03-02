@@ -1,9 +1,9 @@
-import { Tabs, SimpleGrid} from "@chakra-ui/react"
+import { Tabs, Center} from "@chakra-ui/react"
 import ThinkingTreeChart from './ThinkingTreeChart'
 
 export default function TabBox() {
     return (
-    <SimpleGrid columns={2} gap="20" width="full">
+    <Center width="100vh" height="100vh">
         <Tabs.Root defaultValue="thinking">
             <Tabs.List>
             <Tabs.Trigger value="thinking">
@@ -32,7 +32,7 @@ export default function TabBox() {
             <Tabs.Content value="business">Business Documents</Tabs.Content>
             <Tabs.Content value="market">Market Analysis</Tabs.Content>
         </Tabs.Root>
-    </SimpleGrid>
+    </Center>
     )
 }
   

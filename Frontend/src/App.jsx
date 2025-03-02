@@ -23,8 +23,8 @@ export default function App() {
         </button>
       </div>
 	  <HStack>
-		<ChatBox h="20" />
-		<TabBox h="20" />
+		  <ChatBox h="20" />
+		  <TabBox h="20" />
 	  </HStack>
     </>
   )
