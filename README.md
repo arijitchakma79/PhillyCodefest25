@@ -16,7 +16,6 @@ The two clusters of AI agents:
   - GoogleTrends API
 - Thinking & Reasoning Agents
   -  Business Simulation and Future Steps
- 
   -  Ideation Processing Feedback
 
 # Overview
