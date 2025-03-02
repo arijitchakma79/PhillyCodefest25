@@ -9,6 +9,11 @@ export default function ChatBox () {
 	const [input, setInput] = useState("");
 	const [typingMessage, setTypingMessage] = useState("");
 	const messagesEndRef = useRef(null);
+
+	useEffect(() => {
+		// Initial message
+		setMessages([{ text: "Hello! How can I assist you today?", sender: "ai" }]);
+	  }, []);
   
     const handleSend = async () => {
         if (input.trim() === "") return;
@@ -45,25 +50,25 @@ export default function ChatBox () {
       // animates the message typing
 	  const typeMessage = async (text) => {
 		let tempMessage = "";
-		const newMessages = [...messages, { text: "", sender: "ai" }]; // Add empty message first
-		setMessages(newMessages);
-	  
-		const messageIndex = newMessages.length - 1; // Index of the message being typed
+		
+		setMessages((prevMessages) => [...prevMessages, { text: "", sender: "ai" }]);
 	  
 		for (let i = 0; i < text.length; i++) {
 		  tempMessage += text[i];
 	  
-		  // Directly modify the message in state without re-rendering each time
-		  newMessages[messageIndex] = { text: tempMessage, sender: "ai" };
-		  
-		  // Use a ref to force the latest value to be used in the loop
-		  setMessages([...newMessages]); 
+		  // Update state less frequently to improve performance (every 3rd character)
+		  if (i % 3 === 0 || i === text.length - 1) {
+			setMessages((prevMessages) => {
+			  const updatedMessages = [...prevMessages];
+			  updatedMessages[updatedMessages.length - 1] = { text: tempMessage, sender: "ai" };
+			  return updatedMessages;
+			});
+		  }
 	  
-		  await new Promise(res => setTimeout(res, 30)); // Consistent speed
+		  await new Promise((res) => setTimeout(res, 10)); // Faster speed
 		}
 	  };
 	  
-  
 	useEffect(() => {
 	  messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
 	}, [messages, typingMessage]);
@@ -79,22 +84,30 @@ export default function ChatBox () {
 			h="300px"
 		  >
 			{messages.map((msg, index) => (
-			  <motion.div
+			<motion.div
 				key={index}
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ duration: 0.5 }}
 				style={{
-				  alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
-				  background: msg.sender === "user" ? "#f1f1f1" : "#ffffff",
-				  padding: "8px",
-				  borderRadius: "8px",
-				  maxWidth: "75%",
-				  marginBottom: "8px"
+				display: "flex",
+				justifyContent: msg.sender === "user" ? "flex-end" : "flex-start", // Align user to right, AI to left
 				}}
-			  >
+			>
+				<div
+				style={{
+					background: msg.sender === "user" ? "#E2E8F0" : "#ffffff", // Blue for user, Gray for AI
+					color: "black", //janky
+					padding: "8px 12px",
+					borderRadius: "12px",
+					maxWidth: "75%",
+					marginBottom: "8px",
+					textAlign: msg.sender === "user" ? "right" : "left", // Right-align user text
+				}}
+				>
 				{msg.text}
-			  </motion.div>
+				</div>
+			</motion.div>
 			))}
 			{typingMessage && (
 			  <motion.div

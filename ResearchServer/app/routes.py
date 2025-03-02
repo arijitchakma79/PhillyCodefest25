@@ -59,7 +59,8 @@ def analyze_business_swot():
     Expected JSON input format:
     {
         "businessData": {business analysis output},
-        "competitorData": {competitor analysis output}
+        "competitorData": {competitor analysis output},
+        "trendsData": {trends analysis output} (optional)
     }
     """
     try:
@@ -70,7 +71,14 @@ def analyze_business_swot():
         if "businessData" not in data or "competitorData" not in data:
             return jsonify({"error": "Missing required fields: businessData and competitorData"}), 400
             
-        swot_analysis = analyze_swot(data["businessData"], data["competitorData"])
+        # Trends data is optional
+        trends_data = data.get("trendsData", None)
+            
+        swot_analysis = analyze_swot(
+            business_data=data["businessData"], 
+            competitor_data=data["competitorData"],
+            trends_data=trends_data
+        )
         return jsonify(swot_analysis), 200
 
     except Exception as e:
