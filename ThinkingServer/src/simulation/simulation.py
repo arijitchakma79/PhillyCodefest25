@@ -6,7 +6,7 @@ import re
 
 class Simulation:
     def __init__(self, top_states_count=3):
-        self.__month_length = 6
+        self.__month_length = 3
         self.__top_states_count = top_states_count  # Number of top states to keep
         
         self.__state_history = []  # List of states by month

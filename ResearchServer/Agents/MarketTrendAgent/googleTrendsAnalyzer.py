@@ -204,6 +204,13 @@ class GoogleTrendsAnalyzer:
         if not keywords or not regions:
             return {"error": "Empty keywords or regions list"}
         
+        # Temporary
+        if isinstance(keywords, list):
+            keywords = keywords[0]
+
+        if isinstance(regions, list):
+            regions = regions[0]
+
         trends_data = {}
         for keyword in keywords:
             trends_data[keyword] = {}
