@@ -1,5 +1,10 @@
 from flask import Blueprint, request, jsonify
-from app.services import analyze_idea, analyze_google_trends, analyze_competitors  
+from app.services import (
+    analyze_idea, 
+    analyze_google_trends, 
+    analyze_competitors, 
+    analyze_business_pipeline
+)
 
 business_routes = Blueprint("business_routes", __name__)
 
@@ -26,7 +31,7 @@ def analyze_trends():
             return jsonify({"error": "Invalid JSON input"}), 400
 
         insights = analyze_google_trends(trends_data)  
-        return jsonify({"insights": insights}), 200
+        return jsonify(insights), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -41,6 +46,24 @@ def analyze_market_competitors():
 
         competitor_analysis = analyze_competitors(business_data)
         return jsonify(competitor_analysis), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@business_routes.route("/pipeline/analyze", methods=["POST"])
+def run_full_analysis_pipeline():
+    """
+    API endpoint to run the complete business analysis pipeline
+    This runs all agents in parallel and provides a comprehensive analysis
+    """
+    try:
+        request_data = request.get_json()
+        if not request_data:
+            return jsonify({"error": "Invalid JSON input"}), 400
+
+        # Run the full pipeline with parallel processing
+        pipeline_results = analyze_business_pipeline(request_data)
+        return jsonify(pipeline_results), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

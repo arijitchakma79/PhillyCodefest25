@@ -27,7 +27,7 @@ class GoogleTrendsAnalyzer:
             if response.status_code != 200:
                 return None
             return response.json()
-        except Exception as e:
+        except Exception:
             return None
     
     def extract_monthly_data(self, trend_data):
@@ -39,23 +39,19 @@ class GoogleTrendsAnalyzer:
         start_date = self.current_date - timedelta(days=365)
         
         for point in timeline_data:
-            date_str = point.get("date", "")
-            if "–" in date_str:
-                date_str = date_str.split("–")[0].strip()
+            date_str = point.get("date", "").split("–")[0].strip()
             
             try:
                 for fmt in ["%b %d, %Y", "%b %d %Y", "%Y-%m-%d", "%b %d"]:
                     try:
                         if fmt == "%b %d":
                             parsed_date = datetime.strptime(date_str, fmt)
-                            if parsed_date.month > self.current_date.month:
-                                parsed_date = parsed_date.replace(year=self.current_date.year - 1)
-                            else:
-                                parsed_date = parsed_date.replace(year=self.current_date.year)
-                            break
+                            parsed_date = parsed_date.replace(
+                                year=self.current_date.year - 1 if parsed_date.month > self.current_date.month else self.current_date.year
+                            )
                         else:
                             parsed_date = datetime.strptime(date_str, fmt)
-                            break
+                        break
                     except ValueError:
                         continue
                 else:
@@ -67,35 +63,20 @@ class GoogleTrendsAnalyzer:
                 year_month = f"{parsed_date.year}-{parsed_date.month:02d}"
                 
                 values = point.get("values", [])
-                if not values:
-                    continue
-                
-                if isinstance(values[0], dict) and "extracted_value" in values[0]:
-                    value = values[0]["extracted_value"]
-                elif isinstance(values, list) and len(values) > 0:
-                    value = values[0].get("extracted_value", 0)
-                else:
-                    value = 0
+                value = values[0].get("extracted_value", 0) if isinstance(values, list) and values else 0
                 
                 if year_month not in monthly_data:
                     monthly_data[year_month] = []
                 
                 monthly_data[year_month].append(value)
                 
-            except Exception as e:
+            except Exception:
                 continue
         
-        monthly_averages = [
-            {
-                "month": month,
-                "average_value": sum(values) / len(values) if values else 0
-            }
-            for month, values in monthly_data.items()
+        return [
+            {"month": month, "average_value": sum(values) / len(values) if values else 0}
+            for month, values in sorted(monthly_data.items())
         ]
-        
-        monthly_averages.sort(key=lambda x: x["month"])
-        
-        return monthly_averages
     
     def forecast_next_6_months(self, monthly_data):
         if not monthly_data or len(monthly_data) < 3:
@@ -153,15 +134,72 @@ class GoogleTrendsAnalyzer:
                 ]
             )
             return response.choices[0].message.content
-        except Exception as e:
+        except Exception:
             return "Unable to generate insights due to an API error."
     
+    def extract_business_analytics_data(self, business_analytics_data):
+        try:
+            keywords = []
+            regions = []
+            
+            if "industryAnalysis" in business_analytics_data:
+                industry_analysis = business_analytics_data["industryAnalysis"]
+                
+                if "primaryIndustry" in industry_analysis:
+                    keywords.append(industry_analysis["primaryIndustry"])
+                
+                if "subIndustries" in industry_analysis:
+                    keywords.extend(industry_analysis["subIndustries"])
+                
+                if "keywords" in industry_analysis:
+                    keywords.extend(industry_analysis["keywords"])
+                
+                if "potentialGeographicMarkets" in industry_analysis:
+                    regions = industry_analysis["potentialGeographicMarkets"]
+            
+            if not keywords and "originalRequest" in business_analytics_data:
+                request = business_analytics_data["originalRequest"]
+                
+                if "businessIdea" in request and "shortName" in request["businessIdea"]:
+                    keywords.append(request["businessIdea"]["shortName"])
+                
+                if "basicContext" in request and "industry" in request["basicContext"]:
+                    keywords.append(request["basicContext"]["industry"])
+                
+                if not regions and "geographicInterest" in request:
+                    regions = request["geographicInterest"]
+            
+            keywords = list(set(filter(None, keywords)))
+            regions = list(set(filter(None, regions)))
+            
+            if len(keywords) > 3:
+                keywords = keywords[:3]
+            
+            return {
+                "keywords": keywords,
+                "regions": regions
+            }
+        except Exception as e:
+            return {
+                "keywords": [],
+                "regions": [],
+                "error": str(e)
+            }
+    
     def analyze_market_trends(self, request_data):
-        if "keywords" not in request_data or "regions" not in request_data:
-            return {"error": "Missing required fields: keywords and regions"}
-        
-        keywords = request_data["keywords"]
-        regions = request_data["regions"]
+        if isinstance(request_data, dict) and ("industryAnalysis" in request_data or "originalRequest" in request_data):
+            extracted_data = self.extract_business_analytics_data(request_data)
+            keywords = extracted_data.get("keywords", [])
+            regions = extracted_data.get("regions", [])
+            
+            if "error" in extracted_data:
+                return {"error": f"Failed to extract data: {extracted_data['error']}"}
+        else:
+            if "keywords" not in request_data or "regions" not in request_data:
+                return {"error": "Missing required fields: keywords and regions"}
+            
+            keywords = request_data["keywords"]
+            regions = request_data["regions"]
         
         if not keywords or not regions:
             return {"error": "Empty keywords or regions list"}
@@ -186,7 +224,9 @@ class GoogleTrendsAnalyzer:
         ai_analysis = self.analyze_trends_with_openai(trends_summary)
         
         return {
-            "detailed_trends": trends_data,
-            "trends_summary": trends_summary,
-            "ai_analysis": ai_analysis
+            "insights": {
+                "detailed_trends": trends_data,
+                "trends_summary": trends_summary,
+                "ai_analysis": ai_analysis
+            }
         }

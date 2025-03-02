@@ -181,7 +181,7 @@ Include at least 5 major competitors in your analysis.
         
         try:
             response = self.client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": "You are a market research expert analyzing competitive data. Always respond with valid JSON structured according to the requested schema."},
                     {"role": "user", "content": prompt}
