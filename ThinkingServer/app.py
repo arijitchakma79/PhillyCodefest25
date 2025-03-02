@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify, make_response
 import requests
 import json
 
+from flask_cors import CORS
+
 from src.chatbot.chatbot import Chatbot
 from src.agents.preprocesser_agent import PreprocesserAgent
 from src.utils.state_manager import State
@@ -17,12 +19,7 @@ preprocesser = PreprocesserAgent()
 knowledge = Knowledge()
 output_agent = OutputAgent()
 
-@app.after_request
-def add_cors_headers(response):
-    allowed_origin = 'localhost:5173'
-    if request.origin == allowed_origin:
-        response.headers['Access-Control-Allow-Origin'] = allowed_origin
-    return response
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
