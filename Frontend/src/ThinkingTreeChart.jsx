@@ -47,9 +47,11 @@ export default function ThinkingTreeChart() {
 
     return (
         <>
+        <center>
             <div id="treeWrapper" style={{ width: '50em', height: '20em' }}>
                 <Tree data={thinkingTreeChart} enableLegacyTransitions />
             </div>
+        </center>
         </>
     );
 }
