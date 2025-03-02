@@ -26,7 +26,7 @@ instructions: |
     }
 
     Make sure you exactly output as this format and only output the JSON. Put everything important, but don't belong any existing json label in additional context part Leave researchFocus as it is given with all of its value true, don't change its labels or results. If something is missing, make sure you still have the label, just with empty value. Keeping this format same is so important.
-      
+    Make sure description, name and industry information are filled.
 knowledge: ""
 store_history: false
 output_format: "JSON"

@@ -10,6 +10,7 @@ from src.utils.state_manager import State
 from src.utils.llm_agent import OutputFormat
 from src.knowledge.knowledge import Knowledge
 from src.output.output_agent import OutputAgent
+from src.simulation.initial_business_state_agent import InitialBusinessStateAgent
 
 app = Flask(__name__)
 
@@ -18,6 +19,7 @@ chatbot = Chatbot()
 preprocesser = PreprocesserAgent()
 knowledge = Knowledge()
 output_agent = OutputAgent()
+initial_business_state_agent = InitialBusinessStateAgent()
 
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
@@ -108,9 +110,10 @@ def clear():
 @app.route('/api/process', methods=['GET'])
 def process():
     result = json.loads(preprocesser.process_text(chatbot.interface_agent.get_history_text()))
-    
+    print(result)
+
     response = requests.post(
-        url="http://127.0.0.1:5000/analyze",
+        url="http://127.0.0.1:5000/pipeline/analyze",
         json=result,
         headers={
             "Content-Type": "application/json",
@@ -119,16 +122,19 @@ def process():
     
     # Get the JSON response from the other server
     result = response.json()
+    print(result)
     
     knowledge.add_knowledge(result)
 
+    initial_business_state = initial_business_state_agent.process_text(knowledge.get_all_info_text())
+
+    print("-------------------------------------------")
+    print("Initial Business State:")
+    print(initial_business_state)
+
     chatbot.descriptive_agent.set_knowledge(knowledge.get_all_info())
-
-    #print(knowledge.get_all_info_text())
     output = output_agent.process_text(knowledge.get_all_info_text())
-
-    print(output)
-    return jsonify(json.loads(output))
+    return jsonify(result)
 
 @app.route('/api/knowledge', methods=['GET'])
 def get_knowledge():

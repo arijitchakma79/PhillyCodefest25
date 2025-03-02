@@ -10,6 +10,25 @@ export default function App() {
   const [count, setCount] = useState(0)
   	
   //useEffect(() => {alert("Wake up!")}, [count]);
+  const handleGenerate = async() => {
+    try {
+      const response = await fetch("http://localhost:3000/api/process", {
+        method: "GET",
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to send GET processing request.");
+      }
+  
+      const data = await response.json();
+      console.log(data.business || "No response received");
+      
+  
+      // Type out AI response
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
 
   return (
     <>
@@ -18,8 +37,8 @@ export default function App() {
         A Multi-agent solution for startup and business simulation, market and competitor analysis, and ...
       </p>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          Generate {count}
+        <button onClick={() => handleGenerate()}>
+          Generate
         </button>
       </div>
 	  <HStack>
