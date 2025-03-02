@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 import requests
 import json
 
@@ -18,8 +18,10 @@ knowledge = Knowledge()
 output_agent = OutputAgent()
 
 @app.after_request
-def add_restrictive_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'null'  # Effectively disables CORS
+def add_cors_headers(response):
+    allowed_origin = 'localhost:5173'
+    if request.origin == allowed_origin:
+        response.headers['Access-Control-Allow-Origin'] = allowed_origin
     return response
 
 @app.route('/api/chat', methods=['POST'])
